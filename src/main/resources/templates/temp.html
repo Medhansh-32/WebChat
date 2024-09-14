@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket with Session</title>
+</head>
+<body>
+<h2>Login</h2>
+<form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <button type="submit">Login</button>
+</form>
+
+<h2>WebSocket Connection</h2>
+<button id="connectBtn" disabled>Connect to WebSocket</button>
+
+<script>
+    // Handle login
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+
+        fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(username)
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);  // Show success message
+                document.getElementById("connectBtn").disabled = false;  // Enable WebSocket button
+            });
+    });
+
+    // Handle WebSocket connection
+    document.getElementById("connectBtn").addEventListener("click", function() {
+        // Extract sessionId (JSESSIONID) from the cookies
+        const sessionId = document.cookie.split("; ").find(row => row.startsWith("JSESSIONID=")).split('=')[1];
+
+        // Establish WebSocket connection with session ID as a query parameter
+        const ws = new WebSocket("ws://localhost:8080/ws?sessionId=" + sessionId);
+
+        ws.onopen = function() {
+            console.log("WebSocket connection established.");
+        };
+
+        ws.onmessage = function(event) {
+            console.log("Message from server: " + event.data);
+        };
+
+        ws.onclose = function() {
+            console.log("WebSocket connection closed.");
+        };
+
+        ws.onerror = function(error) {
+            console.log("WebSocket error: " + error);
+        };
+    });
+</script>
+</body>
+</html>
