@@ -94,6 +94,9 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     private static final Logger logger = LoggerFactory.getLogger(MyWebSocketHandler.class);
     private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
+    public MyWebSocketHandler() {
+    }
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         HttpSession httpSession = (HttpSession) session.getAttributes().get("httpSession");
@@ -132,7 +135,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             WebSocketSession targetSession = sessions.get(targetUserId);
 
             if (targetSession != null && targetSession.isOpen()) {
-                targetSession.sendMessage(new TextMessage("Message from " + targetUserId + ": " + messageToSend));
+                targetSession.sendMessage(new TextMessage("Message from " + session.getAttributes().get("sessionId").toString() + ": " + messageToSend));
             } else {
                 session.sendMessage(new TextMessage("User " + targetUserId + " is not connected."));
             }
