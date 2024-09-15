@@ -122,10 +122,13 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("Message received from " + session.getId() + ": " + message.getPayload());
 
+
         String[] parts = message.getPayload().split(":", 2);
         if (parts.length == 2) {
             String targetUserId = parts[0];
             String messageToSend = parts[1];
+            logger.info(targetUserId);
+           logger.info(messageToSend);
             WebSocketSession targetSession = sessions.get(targetUserId);
 
             if (targetSession != null && targetSession.isOpen()) {
