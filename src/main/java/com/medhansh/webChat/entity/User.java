@@ -1,28 +1,23 @@
 package com.medhansh.webChat.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 
-
 @Data
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
-@Document(collection = "Contacts")
-public class Contact {
+@Document(collection = "Users")
+public class User {
 
     @Id
     private ObjectId id;
-    private String userName;
+    private String username;
     @DBRef
-    private ArrayList<Message> messages=new ArrayList<>();
+    private ArrayList<Contact> contactList=new ArrayList<>();
+
 }

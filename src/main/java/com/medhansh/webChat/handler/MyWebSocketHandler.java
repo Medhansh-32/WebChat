@@ -1,17 +1,23 @@
 package com.medhansh.webChat.handler;
 
+import com.medhansh.webChat.entity.Message;
+import com.medhansh.webChat.repositories.ContactRespository;
+import com.medhansh.webChat.service.ContactService;
+import com.medhansh.webChat.service.MessageService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 //
@@ -92,15 +98,21 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class MyWebSocketHandler extends TextWebSocketHandler {
     private static final Logger logger = LoggerFactory.getLogger(MyWebSocketHandler.class);
+    private final ContactService contactService;
+    private final MessageService messageService;
     private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    public MyWebSocketHandler() {
+    @Autowired
+    public MyWebSocketHandler(ContactService contactService, MessageService messageService) {
+        this.contactService = contactService;
+        this.messageService = messageService;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         HttpSession httpSession = (HttpSession) session.getAttributes().get("httpSession");
         String sessionId = session.getAttributes().get("sessionId").toString();
+        String receiver=session.getAttributes().get("receiver").toString();
 
         logger.info("new User Joined : "+sessionId);
 //        if (httpSession != null) {
@@ -125,6 +137,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("Message received from " + session.getId() + ": " + message.getPayload());
 
+        String receiver=session.getAttributes().get("receiver").toString();
+
 
         String[] parts = message.getPayload().split(":", 2);
         if (parts.length == 2) {
@@ -132,10 +146,20 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             String messageToSend = parts[1];
             logger.info(targetUserId);
            logger.info(messageToSend);
-            WebSocketSession targetSession = sessions.get(targetUserId);
-
+            WebSocketSession targetSession = sessions.get(receiver);
+            String sender =session.getAttributes().get("sessionId").toString();
             if (targetSession != null && targetSession.isOpen()) {
                 targetSession.sendMessage(new TextMessage("Message from " + session.getAttributes().get("sessionId").toString() + ": " + messageToSend));
+
+                messageService.saveMessage(sender,targetUserId,messageToSend);
+
+                Message message1= Message.builder()
+                        .sender(sender)
+                        .receiver(targetUserId)
+                        .date(new Date())
+                        .message(messageToSend)
+                        .build();
+                contactService.saveContact(sender,message1);
             } else {
                 session.sendMessage(new TextMessage("User " + targetUserId + " is not connected."));
             }

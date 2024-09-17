@@ -90,8 +90,11 @@ public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse res
 
         // Get session ID from the query parameter
         String sessionId = servletRequest.getParameter("sessionId");
+        String receiver=servletRequest.getParameter("receiver");
         if (sessionId != null) {
-            attributes.put("sessionId", sessionId);}
+            attributes.put("sessionId", sessionId);
+            attributes.put("receiver", receiver);
+        }
     }
     return true;
 }

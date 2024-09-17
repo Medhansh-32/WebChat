@@ -95,11 +95,13 @@
 
     // Connect to the WebSocket server when the page loads
     window.onload = function() {
-        const sessionId = prompt("Please enter your session ID:");
-
+        let sessionId =document.cookie;
+        console.log(sessionId);
+        let parts=sessionId.split("=")
+        sessionId=parts[1]
         // Open the WebSocket connection
         socket = new WebSocket("ws://localhost:8080/ws?sessionId=" + sessionId);
-
+      //  socket = new WebSocket("ws://localhost:8080/ws?sessionId=" + sessionId+"?receiver="+receiver);
         socket.onopen = function() {
             addMessageToChatBox('Connected to WebSocket server with session ID: ' + sessionId, 'sent');
         };

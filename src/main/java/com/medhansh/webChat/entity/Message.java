@@ -1,6 +1,8 @@
 package com.medhansh.webChat.entity;
 
+import lombok.Builder;
 import lombok.Data;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,11 +10,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
 @Data
-@Document(collection = "Message")
+@Builder
+@Document(collection = "Messages")
 public class Message {
 
     @Id
-    private String id;
+    private ObjectId id;
     private String sender;
     private String receiver;
     private Date date;

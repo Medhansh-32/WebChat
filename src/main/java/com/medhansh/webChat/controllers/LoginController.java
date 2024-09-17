@@ -1,15 +1,19 @@
 package com.medhansh.webChat.controllers;
 
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-@RestController
+@Controller
+@WebFilter("/signup")
 public class LoginController {
 
 //    @PostMapping("/login")
@@ -21,9 +25,11 @@ public class LoginController {
 //        response.addCookie(cookie);
 //
 //        return "User " + username + " logged in successfully";
-//    }
-@PostMapping("/login")
-public String login(HttpServletRequest request, HttpServletResponse response, @RequestBody String username) {
+//  }
+@GetMapping("/login")
+public String login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    String username=request.getParameter("username");
     String userId = URLEncoder.encode(username, StandardCharsets.UTF_8);
 
     // Create session and set userId
@@ -31,10 +37,31 @@ public String login(HttpServletRequest request, HttpServletResponse response, @R
     session.setAttribute("userId", userId);
 
     // Add userId as a cookie
+    // Create the userId cookie and manually set SameSite=None
+
+
+// Create a cookie with the correct attributes
     Cookie cookie = new Cookie("userId", userId);
+    cookie.setSecure(true);  // Ensure it's sent over HTTPS
+ //   cookie.setHttpOnly(true); // Prevent access from JavaScript
+    cookie.setPath("/"); // Set the path for which the cookie is valid
+
+// Manually set SameSite=None attribute
+    response.addHeader("Set-Cookie", cookie.getName() + "=" + cookie.getValue()
+            + "; Secure; HttpOnly; SameSite=None");
+
     response.addCookie(cookie);
+    return "temp";
 
-    return "User " + username + " logged in successfully";
 }
+@GetMapping("/receiver")
+    public String receiver(HttpServletRequest request, HttpServletResponse response,@RequestParam("receiver") String receiver) throws IOException {
 
+    Cookie cookie = new Cookie("receiver", receiver);
+    cookie.setSecure(true);
+    response.addHeader("Set-Cookie", cookie.getName() + "=" + cookie.getValue()
+            + "; Secure; HttpOnly; SameSite=None");
+
+    return "temp";
+}
 }
