@@ -6,11 +6,13 @@ import com.medhansh.webChat.entity.User;
 import com.medhansh.webChat.repositories.ContactRespository;
 import com.medhansh.webChat.repositories.MessageRepository;
 import com.medhansh.webChat.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -39,5 +41,37 @@ public class UserService {
         }
     return true;
     }
+
+    public boolean addNewUser(String userName){
+
+        try {
+            userRepository.save(User.builder()
+                    .username(userName)
+                    .contactList(new ArrayList<>()).build());
+        }catch (Exception e){
+            log.error("User Exists");
+            return false;
+        }
+    return true;
+    }
+
+
+    public boolean addNewContactToUser(String userName,String newContact){
+        User user=userRepository.findByUsername(userName);
+        ArrayList<Contact> contacts=user.getContactList();
+        contacts.add(Contact
+                .builder()
+                .userName(newContact)
+                .messages(new ArrayList<>()).build());
+        user.setContactList(contacts);
+        try {
+            userRepository.save(user);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
 
 }

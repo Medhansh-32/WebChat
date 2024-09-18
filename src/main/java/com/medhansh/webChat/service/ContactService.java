@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class ContactService {
 
@@ -25,7 +27,8 @@ public class ContactService {
     public String saveContact(String userName) {
         Contact contact =new Contact();
         contact.setUserName(userName);
-        contact.setMessages(null);
+        ArrayList<Message> messages = new ArrayList<>();
+        contact.setMessages(messages);
         try {
             contactRespository.save(contact);
         }catch (Exception e){
