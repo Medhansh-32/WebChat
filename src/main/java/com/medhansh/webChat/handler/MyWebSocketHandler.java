@@ -4,6 +4,7 @@ import com.medhansh.webChat.entity.Message;
 import com.medhansh.webChat.repositories.ContactRespository;
 import com.medhansh.webChat.service.ContactService;
 import com.medhansh.webChat.service.MessageService;
+import com.medhansh.webChat.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -100,12 +101,14 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     private static final Logger logger = LoggerFactory.getLogger(MyWebSocketHandler.class);
     private final ContactService contactService;
     private final MessageService messageService;
+    private final UserService userService;
     private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     @Autowired
-    public MyWebSocketHandler(ContactService contactService, MessageService messageService) {
+    public MyWebSocketHandler(ContactService contactService, MessageService messageService, UserService userService) {
         this.contactService = contactService;
         this.messageService = messageService;
+        this.userService = userService;
     }
 
     @Override
@@ -142,26 +145,34 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
         String[] parts = message.getPayload().split(":", 2);
         if (parts.length == 2) {
-            String targetUserId = parts[0];
+
             String messageToSend = parts[1];
-            logger.info(targetUserId);
+            logger.info(receiver);
            logger.info(messageToSend);
             WebSocketSession targetSession = sessions.get(receiver);
             String sender =session.getAttributes().get("sessionId").toString();
+
             if (targetSession != null && targetSession.isOpen()) {
                 targetSession.sendMessage(new TextMessage("Message from " + session.getAttributes().get("sessionId").toString() + ": " + messageToSend));
 
-                messageService.saveMessage(sender,targetUserId,messageToSend);
+                messageService.saveMessage(sender,receiver,messageToSend);
 
                 Message message1= Message.builder()
                         .sender(sender)
-                        .receiver(targetUserId)
+                        .receiver(receiver)
                         .date(new Date())
                         .message(messageToSend)
                         .build();
-                contactService.saveContact(sender,message1);
+                userService.saveUserMessage(sender,receiver,message1);
             } else {
-                session.sendMessage(new TextMessage("User " + targetUserId + " is not connected."));
+                messageService.saveMessage(sender,receiver,messageToSend);
+                Message message1= Message.builder()
+                        .sender(sender)
+                        .receiver(receiver)
+                        .date(new Date())
+                        .message(messageToSend)
+                        .build();
+                contactService.saveContact(sender);
             }
         } else {
             session.sendMessage(new TextMessage("Invalid message format. Use 'targetUserId:message'."));
