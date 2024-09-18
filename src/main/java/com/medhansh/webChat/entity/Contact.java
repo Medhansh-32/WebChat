@@ -23,6 +23,5 @@ public class Contact {
     @Id
     private ObjectId id;
     private String userName;
-    @DBRef
     private ArrayList<Message> messages=new ArrayList<>();
 }

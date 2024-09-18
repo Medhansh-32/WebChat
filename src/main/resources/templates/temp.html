@@ -71,6 +71,8 @@
 <h2>WebChat</h2>
 <div id="chat-box"></div>
 
+<h2 id="receiverH1"></h2>
+
 <div id="input-container">
     <input type="text" id="target-session-id" placeholder="Enter target session ID" required>
     <input type="text" id="message" placeholder="Enter your message" required>
@@ -82,7 +84,8 @@
     const chatBox = document.getElementById('chat-box');
     const sendBtn = document.getElementById('send-btn');
     const messageInput = document.getElementById('message');
-    const targetSessionIdInput = document.getElementById('target-session-id');
+    const targetSessionIdInput = document.getElementById('target-session-id')
+    const receiverH1 = document.getElementById('receiverH1');
 
     // Function to add messages to the chat box
     function addMessageToChatBox(message, type) {
@@ -95,15 +98,23 @@
 
     // Connect to the WebSocket server when the page loads
     window.onload = function() {
-        let sessionId =document.cookie;
-        console.log(sessionId);
-        let parts=sessionId.split("=")
-        sessionId=parts[1]
+
+
+         let cookies=document.cookie.split(";");
+        let senderCookie=cookies[0].split("=")
+        let receiverCookie=cookies[1].split("=")
+
+        let sender=senderCookie[1]
+        let receiver=receiverCookie[1]
+        sender=sender.replace('+',' ');
+        receiver=receiver.replace('+',' ')
+        receiverH1.textContent=receiver
+        console.log(sender,receiver);
         // Open the WebSocket connection
-        socket = new WebSocket("ws://localhost:8080/ws?sessionId=" + sessionId);
-      //  socket = new WebSocket("ws://localhost:8080/ws?sessionId=" + sessionId+"?receiver="+receiver);
+      //socket = new WebSocket("ws://localhost:8080/ws?sessionId=" + sender);
+      socket = new WebSocket("ws://localhost:8080/ws?sessionId="+sender+"&receiver="+receiver);
         socket.onopen = function() {
-            addMessageToChatBox('Connected to WebSocket server with session ID: ' + sessionId, 'sent');
+            addMessageToChatBox('Connected to WebSocket server with session ID: ' + sender, 'sent');
         };
 
         socket.onmessage = function(event) {

@@ -163,7 +163,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                         .date(new Date())
                         .message(messageToSend)
                         .build();
-                userService.saveUserMessage(sender,receiver,message1);
+            //    userService.saveUserMessage(sender,receiver,message1);
             } else {
                 messageService.saveMessage(sender,receiver,messageToSend);
                 Message message1= Message.builder()

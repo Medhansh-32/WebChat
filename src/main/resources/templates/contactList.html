@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: blue;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h1>Contact List</h1>
+<ul>
+    <!-- Loop through the contactList dynamically using Thymeleaf -->
+    <li th:each="contact : ${contactList}">
+        <!-- Display the userName of each contact with a link to /receiver -->
+        <a th:href="@{/receiver(receiver=${contact.userName})}" th:text="${contact.userName}">Contact Name</a>
+    </li>
+</ul>
+</body>
+</html>

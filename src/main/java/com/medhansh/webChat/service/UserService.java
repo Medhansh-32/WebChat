@@ -7,9 +7,12 @@ import com.medhansh.webChat.repositories.ContactRespository;
 import com.medhansh.webChat.repositories.MessageRepository;
 import com.medhansh.webChat.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -55,14 +58,27 @@ public class UserService {
     return true;
     }
 
+    public List<Contact> getContactList(String userName){
+
+        try {
+             return userRepository.findByUsername(userName)
+                    .getContactList();
+        }catch (Exception e){
+            log.error(e.getMessage());
+            log.error("User Do not Exists");
+            return null;
+        }
+    }
 
     public boolean addNewContactToUser(String userName,String newContact){
         User user=userRepository.findByUsername(userName);
         ArrayList<Contact> contacts=user.getContactList();
-        contacts.add(Contact
+
+        contacts.add(contactRespository.save(Contact
                 .builder()
                 .userName(newContact)
-                .messages(new ArrayList<>()).build());
+                .messages(new ArrayList<>()).build()));
+
         user.setContactList(contacts);
         try {
             userRepository.save(user);
