@@ -20,7 +20,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 //
 //@Component
 //@Slf4j
@@ -103,6 +105,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     private final MessageService messageService;
     private final UserService userService;
     private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private Map<String,String> chatingWith=new ConcurrentHashMap<>();
+    Queue<String> queue = new ConcurrentLinkedQueue<>();
 
     @Autowired
     public MyWebSocketHandler(ContactService contactService, MessageService messageService, UserService userService) {
@@ -115,9 +119,24 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         HttpSession httpSession = (HttpSession) session.getAttributes().get("httpSession");
         String sessionId = session.getAttributes().get("sessionId").toString();
-        String receiver=session.getAttributes().get("receiver").toString();
+        String receiver = session.getAttributes().get("receiver").toString();
+        logger.info("receiver: "+receiver);
+        logger.info("sender :"+sessionId);
+        if(chatingWith.containsKey(receiver)){
+            try{
+                chatingWith.get(chatingWith.get(receiver)).equals(receiver);
+                queue.add(sessionId);
+            }catch (Exception e){
+                logger.info(sessionId + " Connected with "+receiver);
+                chatingWith.put(sessionId,receiver);
+            }
 
-        logger.info("new User Joined : "+sessionId);
+        }else{
+        logger.info(sessionId + " Connected with last else "+receiver);
+            chatingWith.put(sessionId,receiver);
+        }
+
+        logger.info("new User Joined : " + sessionId);
 //        if (httpSession != null) {
 //            String userId = (String) httpSession.getAttribute("userId");
 //            if (userId != null) {
@@ -130,9 +149,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 //            logger.error("HttpSession is null in WebSocket session");
 //        }
         sessions.put(sessionId, session);
-        for(String id:sessions.keySet()){
-            logger.info(id+" : "+sessions.get(id).getId());
-        }
+        logger.info(sessions.get(sessionId).getId());
 
     }
 
@@ -140,7 +157,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("Message received from " + session.getId() + ": " + message.getPayload());
 
-        String receiver=session.getAttributes().get("receiver").toString();
+        String receiver = session.getAttributes().get("receiver").toString();
+        String sender = session.getAttributes().get("sessionId").toString();
 
 
         String[] parts = message.getPayload().split(":", 2);
@@ -148,35 +166,34 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
             String messageToSend = parts[1];
             logger.info(receiver);
-           logger.info(messageToSend);
-            WebSocketSession targetSession = sessions.get(receiver);
-            String sender =session.getAttributes().get("sessionId").toString();
+            logger.info(messageToSend);
 
-            if (targetSession != null && targetSession.isOpen()) {
-                targetSession.sendMessage(new TextMessage("Message from " + session.getAttributes().get("sessionId").toString() + ": " + messageToSend));
+            logger.info(receiver+" chatting with in handle message "+chatingWith.get(receiver));
+            logger.info(sender+" chatting with "+chatingWith.get(sender));
 
-                messageService.saveMessage(sender,receiver,messageToSend);
-
-                Message message1= Message.builder()
-                        .sender(sender)
-                        .receiver(receiver)
-                        .date(new Date())
-                        .message(messageToSend)
-                        .build();
-            //    userService.saveUserMessage(sender,receiver,message1);
-            } else {
-                messageService.saveMessage(sender,receiver,messageToSend);
-                Message message1= Message.builder()
-                        .sender(sender)
-                        .receiver(receiver)
-                        .date(new Date())
-                        .message(messageToSend)
-                        .build();
-                contactService.saveContact(sender);
+            if(chatingWith.get(sender)==receiver){
+                logger.info(sender+" chatting with "+chatingWith.get(sender));
+                if (sessions.containsKey(receiver)) {
+                    WebSocketSession targetSession = sessions.get(receiver);
+                    targetSession.sendMessage(new TextMessage(messageToSend));
+                }else{
+                    session.sendMessage(new TextMessage("User is not connected"));
+                }
+            }else{
+                session.sendMessage(new TextMessage("User is not connected but your message is send"));
             }
-        } else {
-            session.sendMessage(new TextMessage("Invalid message format. Use 'targetUserId:message'."));
-        }
-    }
 
+
+        }
+
+    }
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        String receiver = session.getAttributes().get("receiver").toString();
+        String sender = session.getAttributes().get("sessionId").toString();
+        String newReceiver = queue.remove();
+        logger.info("receiver: " + newReceiver);
+        chatingWith.put(sender, newReceiver);
+
+    }
 }

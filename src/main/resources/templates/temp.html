@@ -69,12 +69,12 @@
 <body>
 
 <h2>WebChat</h2>
+<h2 id="receiverH1"></h2>
 <div id="chat-box"></div>
 
-<h2 id="receiverH1"></h2>
+
 
 <div id="input-container">
-    <input type="text" id="target-session-id" placeholder="Enter target session ID" required>
     <input type="text" id="message" placeholder="Enter your message" required>
     <button id="send-btn">Send</button>
 </div>
@@ -100,7 +100,7 @@
     window.onload = function() {
 
 
-         let cookies=document.cookie.split(";");
+        let cookies=document.cookie.split(";");
         let senderCookie=cookies[0].split("=")
         let receiverCookie=cookies[1].split("=")
 
@@ -111,8 +111,8 @@
         receiverH1.textContent=receiver
         console.log(sender,receiver);
         // Open the WebSocket connection
-      //socket = new WebSocket("ws://localhost:8080/ws?sessionId=" + sender);
-      socket = new WebSocket("ws://localhost:8080/ws?sessionId="+sender+"&receiver="+receiver);
+        //socket = new WebSocket("ws://localhost:8080/ws?sessionId=" + sender);
+        socket = new WebSocket("ws://localhost:8080/ws?sessionId="+sender+"&receiver="+receiver);
         socket.onopen = function() {
             addMessageToChatBox('Connected to WebSocket server with session ID: ' + sender, 'sent');
         };
@@ -133,8 +133,16 @@
 
     // Send a message when the "Send" button is clicked
     sendBtn.addEventListener('click', function() {
+        let cookies=document.cookie.split(";");
+        let senderCookie=cookies[0].split("=")
+        let receiverCookie=cookies[1].split("=")
+
+        let sender=senderCookie[1]
+        let receiver=receiverCookie[1]
+        sender=sender.replace('+',' ');
+        receiver=receiver.replace('+',' ');
         const message = messageInput.value;
-        const targetSessionId = targetSessionIdInput.value;
+        const targetSessionId = receiver;
 
         if (message && targetSessionId) {
             const fullMessage = targetSessionId + ':' + message;  // Format: targetSessionId:message
