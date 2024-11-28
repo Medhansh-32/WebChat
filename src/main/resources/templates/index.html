@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #user-list {
+            width: 25%;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+        }
+
+        #chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            width: 75%;
+        }
+
+        #container {
+            display: flex;
+            flex: 1;
+            height: 100%;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        li:hover {
+            background: #f1f1f1;
+        }
+
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        #message-form {
+            display: flex;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-radius: 10px;
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+
+        .sent {
+            background-color: #d4edda;
+            text-align: right;
+            margin-left: auto;
+        }
+
+        .received {
+            background-color: #f8d7da;
+            text-align: left;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+<button id="activate">Activate</button>
+<div id="container">
+    <!-- User List -->
+    <div id="user-list">
+        <h3>Contacts</h3>
+        <ul id="users">
+            <!-- User list will be populated dynamically -->
+        </ul>
+    </div>
+
+    <!-- Chat Window -->
+    <div id="chat-window">
+        <h3 id="chat-with">Select a contact to start chatting</h3>
+        <div id="messages">
+            <!-- Chat messages will appear here -->
+        </div>
+        <form id="message-form" onsubmit="sendMessage(); return false;">
+            <input type="text" id="message-input" placeholder="Type a message..." />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</div>
+<p id="online_user" th:text="${username}"></p>
+
+<script>
+    const user = document.getElementById("online_user").innerText;
+    const btn = document.getElementById("activate");
+    btn.addEventListener("click", () => {
+        console.log("Clicking...");
+        connect();
+    });
+
+    let stompClient = null;
+    let selectedUser = null;
+
+    // Connect to WebSocket
+    async function connect() {
+        await fetchUsers();
+        const socket = new SockJS('/chat');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, () => {
+            console.log('Connected to WebSocket');
+            // Subscribe to private messages
+            stompClient.subscribe('/user/queue/messages', (message) => {
+                displayMessage(JSON.parse(message.body), false);
+            });
+        });
+    }
+
+    // Fetch user list from backend
+    async function fetchUsers() {
+        const response = await fetch("/users/data");
+        const users = await response.json();
+
+        const userList = document.getElementById("users");
+        userList.innerHTML = ""; // Clear previous list
+
+        users.forEach(user => {
+            const userElement = document.createElement("li");
+            userElement.textContent = user;
+            userElement.onclick = () => selectUser(user);
+            userList.appendChild(userElement);
+        });
+    }
+
+    // Select a contact
+    function selectUser(username) {
+        selectedUser = username;
+        document.getElementById("chat-with").textContent = `Chatting with: ` + username;
+        document.getElementById("messages").innerHTML = ""; // Clear previous messages
+        fetchChatHistory(username);
+    }
+
+    // Fetch chat history with the selected user
+    async function fetchChatHistory(selectedUser) {
+        const response = await fetch(`/messages/${selectedUser}`);
+        const messages = await response.json();
+
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.innerHTML = ""; // Clear previous messages
+
+        messages.forEach(message => {
+            const isSent = message.sender === user;
+            displayMessage(message, isSent);
+        });
+    }
+
+    // Display received or sent message
+    function displayMessage(message, isSent) {
+        const messagesDiv = document.getElementById("messages");
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        messageElement.classList.add(isSent ? "sent" : "received");
+        messageElement.textContent = `${message.sender}: ${message.content}`;
+        messagesDiv.appendChild(messageElement);
+
+        // Scroll to the latest message
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Send a message
+    function sendMessage() {
+        const messageInput = document.getElementById("message-input").value;
+
+        if (!selectedUser) {
+            alert("Please select a user to chat with!");
+            return;
+        }
+
+        stompClient.send("/app/private-message", {}, JSON.stringify({
+            sender: user,
+            receiver: selectedUser,
+            content: messageInput
+        }));
+
+        // Display the sent message immediately
+        displayMessage({ sender: user, content: messageInput }, true);
+
+        document.getElementById("message-input").value = ""; // Clear input field
+    }
+</script>
+</body>
+</html>
