@@ -105,6 +105,30 @@
             text-align: left;
             margin-right: auto;
         }
+
+        #add-contact-section {
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #new-contact-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .badge {
+            background-color: red;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: none;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -116,6 +140,13 @@
         <ul id="users">
             <!-- User list will be populated dynamically -->
         </ul>
+        <!-- Add Contact Section -->
+        <div id="add-contact-section">
+            <input type="text" id="new-contact-input" placeholder="Enter new contact name" />
+            <button id="add-contact" style="background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Add
+            </button>
+        </div>
     </div>
 
     <!-- Chat Window -->
@@ -142,6 +173,7 @@
 
     let stompClient = null;
     let selectedUser = null;
+    const unreadMessages = {}; // Track unread message counts for each user
 
     // Connect to WebSocket
     async function connect() {
@@ -150,9 +182,9 @@
         stompClient = Stomp.over(socket);
         stompClient.connect({}, () => {
             console.log('Connected to WebSocket');
-            // Subscribe to private messages
             stompClient.subscribe('/user/queue/messages', (message) => {
-                displayMessage(JSON.parse(message.body), false);
+                const messageData = JSON.parse(message.body);
+                handleIncomingMessage(messageData);
             });
         });
     }
@@ -166,24 +198,61 @@
         userList.innerHTML = ""; // Clear previous list
 
         users.forEach(user => {
+            unreadMessages[user] = 0; // Initialize unread counter
             const userElement = document.createElement("li");
+            userElement.setAttribute("id", `user-${user}`); // Unique ID for the user element
             userElement.textContent = user;
             userElement.onclick = () => selectUser(user);
+
+            // Add badge for unread messages
+            const badge = document.createElement("span");
+            badge.classList.add("badge");
+            badge.style.display = "none"; // Hide badge initially
+            badge.textContent = unreadMessages[user];
+            userElement.appendChild(badge);
+
             userList.appendChild(userElement);
         });
+    }
+
+    // Handle incoming messages
+    function handleIncomingMessage(message) {
+        const sender = message.sender;
+
+        if (selectedUser !== sender) {
+            // Increment unread count for the sender
+            unreadMessages[sender] = (unreadMessages[sender] || 0) + 1;
+            updateBadge(sender);
+        } else {
+            // Directly display the message if the user is already chatting with the sender
+            displayMessage(message, false);
+        }
+    }
+
+    // Update badge with the unread message count
+    function updateBadge(username) {
+        const userElement = document.getElementById(`user-${username}`);
+        const badge = userElement.querySelector(".badge");
+        badge.textContent = unreadMessages[username];
+        badge.style.display = unreadMessages[username] > 0 ? "inline-block" : "none";
     }
 
     // Select a contact
     function selectUser(username) {
         selectedUser = username;
         document.getElementById("chat-with").textContent = `Chatting with: ` + username;
+
+        // Reset unread count for the selected user
+        unreadMessages[username] = 0;
+        updateBadge(username);
+
         document.getElementById("messages").innerHTML = ""; // Clear previous messages
         fetchChatHistory(username);
     }
 
     // Fetch chat history with the selected user
-    async function fetchChatHistory(selectedUser) {
-        const response = await fetch(`/messages/${selectedUser}`);
+    async function fetchChatHistory(username) {
+        const response = await fetch(`/messages/${username}`);
         const messages = await response.json();
 
         const messagesDiv = document.getElementById("messages");
@@ -197,6 +266,11 @@
 
     // Display received or sent message
     function displayMessage(message, isSent) {
+        // Ensure messages are only displayed if the user is chatting with the correct person
+        if ((isSent && message.receiver !== selectedUser) || (!isSent && message.sender !== selectedUser)) {
+            return; // Do not display the message if the selected user is not involved
+        }
+
         const messagesDiv = document.getElementById("messages");
         const messageElement = document.createElement("div");
         messageElement.classList.add("message");
@@ -224,10 +298,40 @@
         }));
 
         // Display the sent message immediately
-        displayMessage({ sender: user, content: messageInput }, true);
+        displayMessage({ sender: user, receiver: selectedUser, content: messageInput }, true);
 
         document.getElementById("message-input").value = ""; // Clear input field
     }
+
+    // Add contact functionality
+    document.getElementById("add-contact").addEventListener("click", async () => {
+        const newContactInput = document.getElementById("new-contact-input");
+        const newContact = newContactInput.value.trim();
+
+        if (newContact === "") {
+            alert("Please enter a valid username.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/users/addContact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newContact: newContact })
+            });
+
+            if (response.ok) {
+                alert(`${newContact} added successfully!`);
+                fetchUsers(); // Refresh the user list
+                newContactInput.value = ""; // Clear input
+            } else {
+                alert("Failed to add contact. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error adding contact:", error);
+            alert("An error occurred while adding the contact.");
+        }
+    });
 </script>
 </body>
 </html>

@@ -4,6 +4,7 @@ package com.medhansh.webChat.controller;
 import com.medhansh.webChat.model.User;
 import com.medhansh.webChat.repository.UserRepository;
 import com.medhansh.webChat.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 
 @RestController
+@Slf4j
 @RequestMapping("/users")
 public class UserController {
 
@@ -36,6 +38,7 @@ public class UserController {
     }
     @PostMapping("/addContact")
     public ResponseEntity addContact(@RequestBody Map<String, String> requestBody) {
+        log.info(requestBody.get("newContact"));
         if(userService.addContact(requestBody.get("newContact"))){
             return new ResponseEntity(HttpStatus.OK);
         }else{
