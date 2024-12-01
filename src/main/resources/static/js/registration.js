@@ -40,8 +40,7 @@ document.getElementById('registrationForm').addEventListener('submit', async (e)
         });
 
         if (response.ok) {
-            document.getElementById('message').textContent = 'Registration successful!';
-            document.getElementById('message').style.color = 'green';
+           window.location.href="/"
         } else {
             document.getElementById('message').textContent = 'Registration failed';
             document.getElementById('message').style.color = 'red';

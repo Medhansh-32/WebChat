@@ -31,7 +31,6 @@ public class SecurityConfig {
                         .requestMatchers("/register","/css/**","/js/**","users/register","/login").permitAll()
                         .anyRequest().authenticated()// Require authentication for other requests
                 )
-                .httpBasic(Customizer.withDefaults())
                 .formLogin(req->
                         req.loginPage("/login"))
 

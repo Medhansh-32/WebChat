@@ -50,7 +50,6 @@ public class UserController {
         Boolean flag=userService.createUser(User.builder().username(username)
                 .password(password).build(),file);
         if(flag==true){
-            response.sendRedirect("/");
             return new ResponseEntity(HttpStatus.OK);
         }else{
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
