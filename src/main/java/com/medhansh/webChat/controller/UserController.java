@@ -6,6 +6,7 @@ import com.medhansh.webChat.model.User;
 import com.medhansh.webChat.repository.UserRepository;
 import com.medhansh.webChat.service.ImageUploadService;
 import com.medhansh.webChat.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +44,13 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity createUser(@RequestParam String username,
                                      @RequestParam String password,
-                                     @RequestParam(value = "profilePicture", required = false) MultipartFile file) {
+                                     @RequestParam(value = "profilePicture", required = false) MultipartFile file, HttpServletResponse response) throws IOException {
 
 
         Boolean flag=userService.createUser(User.builder().username(username)
                 .password(password).build(),file);
         if(flag==true){
+            response.sendRedirect("/");
             return new ResponseEntity(HttpStatus.OK);
         }else{
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
