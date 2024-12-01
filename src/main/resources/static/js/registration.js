@@ -1,3 +1,26 @@
+document.getElementById('profilePicture').addEventListener('change', (e) => {
+    const profilePicture = e.target.files[0];
+    if (profilePicture) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(profilePicture); // Generate a temporary URL for the file
+        img.style.height = "80px";
+        img.style.width = "80px";
+        img.style.borderRadius = "50%"; // Optional: Make it circular for a profile picture
+        img.style.marginTop = "10px"; // Optional: Add spacing
+
+        // Remove any previously appended images
+        const form = document.getElementById("registrationForm");
+        const existingImg = form.querySelector("img");
+        if (existingImg) {
+            form.removeChild(existingImg);
+        }
+
+        // Append the new image
+        form.appendChild(img);
+    }
+});
+
+// Submit event for form
 document.getElementById('registrationForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -20,7 +43,7 @@ document.getElementById('registrationForm').addEventListener('submit', async (e)
             document.getElementById('message').textContent = 'Registration successful!';
             document.getElementById('message').style.color = 'green';
         } else {
-            document.getElementById('message').textContent =  'Registration failed';
+            document.getElementById('message').textContent = 'Registration failed';
             document.getElementById('message').style.color = 'red';
         }
     } catch (error) {

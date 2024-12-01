@@ -1,5 +1,6 @@
 package com.medhansh.webChat.service;
 
+import com.medhansh.webChat.model.Contact;
 import com.medhansh.webChat.model.User;
 import com.medhansh.webChat.repository.UserRepository;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class UserService {
         this.imageUploadService = imageUploadService;
     }
 
-    public List<String> getAllUsers() {
+    public List<Contact> getAllUsers() {
         String username=SecurityContextHolder.getContext().getAuthentication().getName();
         User user=userRepository.findByUsername(username);
         return user.getContacts();
@@ -58,17 +59,28 @@ public class UserService {
 
 
     }
-    public Boolean addContact(String newContact) {
+    public Boolean addContact(String newContactName) {
         try {
             String user1 = SecurityContextHolder.getContext().getAuthentication().getName();
             User user=userRepository.findByUsername(user1);
-
-                user.getContacts().add(newContact);
+            User newUser=userRepository.findByUsername(newContactName);
+            Contact contact=Contact.builder()
+                            .contactName(newContactName)
+                                    .profilePictureLink(newUser.getProfilePicture()).build();
+                user.getContacts().add(contact);
                 userRepository.save(user);
                 return true;
             }
         catch (Exception e) {
             return false;
         }
+    }
+
+    public Boolean deleteContact(String contactName) {
+    String user=SecurityContextHolder.getContext().getAuthentication().getName();
+    User userData=userRepository.findByUsername(user);
+    Boolean isDeleted=userData.getContacts().removeIf(contact -> contact.getContactName().equals(contactName));
+    userRepository.save(userData);
+    return isDeleted;
     }
 }

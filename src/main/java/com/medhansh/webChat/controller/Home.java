@@ -18,5 +18,8 @@ public class Home {
     public String register(){
         return "registration";
     }
-
+    @GetMapping("/login")
+    public String login() {
+        return "login"; // This matches the login.html file
+    }
 }

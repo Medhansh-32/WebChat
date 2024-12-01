@@ -28,11 +28,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/register","/css/**","/js/**","users/register").permitAll()
+                        .requestMatchers("/register","/css/**","/js/**","users/register","/login").permitAll()
                         .anyRequest().authenticated()// Require authentication for other requests
                 )
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults())
+                .formLogin(req->
+                        req.loginPage("/login"))
 
                 .logout(logout -> logout
                         .permitAll() // Allow all users to log out

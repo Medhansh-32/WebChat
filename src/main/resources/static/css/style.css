@@ -6,7 +6,6 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
     color: #ecf0f1;
     overflow: hidden;
 }
@@ -15,15 +14,16 @@ body {
 #container {
     display: flex;
     flex: 1;
-    height: 100%;
+    height: 90%;
 }
 
 /* Sidebar - User List */
 #user-list {
     width: 25%;
-    background: rgba(0, 0, 0, 0.7);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.8);
+    border-right: 1px solid rgb(25, 24, 24);
     display: flex;
+    margin-bottom: 40px;
     flex-direction: column;
     justify-content: space-between;
 }
@@ -33,44 +33,45 @@ body {
     font-size: 1.5rem;
     margin: 10px 2px 5px 6px;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(25, 24, 24);
     border-radius: 10px;
 
 }
 
 #users {
     list-style: none;
-    margin: 0;
-    padding: 0 10px;
-    overflow-y: auto;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-bottom: 100px;
+    overflow-y:auto ;
+    background: rgba(0, 0, 0, 0.8);
     flex: 1;
 }
 
 li {
     padding: 10px;
     margin: 10px 0;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(25, 24, 24);
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s, transform 0.3s;
     color: #ecf0f1;
 }
 
-li:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-}
-
 #add-contact-section {
+    position: fixed;
+    bottom: 1px;
     display: flex;
-    padding: 10px;
+    padding:10px;
+    padding-right: 5px;
+    width: 24.5%;
+    margin-bottom: 0px;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 1);
 }
 
 #new-contact-input {
     flex: 1;
-    padding: 10px;
     border: 1px solid #ecf0f1;
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.1);
@@ -85,7 +86,6 @@ li:hover {
     flex-direction: column;
     padding: 10px;
     background: rgba(0, 0, 0, 0.8);
-    border-radius: 0 15px 15px 0;
 }
 
 #chat-with {
@@ -93,7 +93,7 @@ li:hover {
     font-size: 1.5rem;
     margin-top: 0px;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(25, 24, 24);
     border-radius: 10px;
     margin-bottom: 15px;
 }
@@ -101,10 +101,11 @@ li:hover {
 /* Messages Section */
 #messages {
     flex: 1;
-    overflow-y: auto;
-    background: rgba(255, 255, 255, 0.1);
+    overflow-y: scroll;
+    background: rgb(25, 24, 24);
     border-radius: 10px;
     padding: 10px;
+    margin-bottom: 65px;
 }
 
 /* Individual Messages */
@@ -135,7 +136,9 @@ li:hover {
 /* Message Input Section */
 #message-form {
     display: flex;
+    bottom: 15px;
     gap: 10px;
+    margin-bottom: 10px;
     margin-top: 10px;
     align-items: center;
 }
@@ -145,7 +148,7 @@ li:hover {
     padding: 10px;
     border: none;
     border-radius: 5px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(25, 24, 24);
     color: #ecf0f1;
     outline: none;
     font-size: 1rem;
@@ -204,7 +207,7 @@ button:hover {
 }
 
 #messages::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgb(25, 24, 24);
     border-radius: 5px;
 }
 
@@ -245,13 +248,137 @@ button:hover {
 }
 
 /* Style the badge for unread messages */
+.user-item {
+    display: flex;
+    align-items: center;
+    position: relative; /* Set the parent container to relative */
+}
+
 .badge {
-    background-color: red;
+    background-color: green;
     color: white;
     font-size: 12px;
     border-radius: 50%;
     padding: 5px;
+    position: absolute; /* Position the badge absolutely inside the user-item */
+    right: 40px; /* Adjust to place the badge before the delete button */
+    /* If needed, adjust the 'right' value to ensure space before the delete button */
+}
+
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Makes the image circular */
+    margin-right: 10px;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+.delete-icon {
+    font-size: 20px; /* Adjust the size */
+    cursor: pointer; /* Makes it look clickable */
+    color: red; /* Change color to red for the trash icon */
+    margin-left: auto; /* Optional: Add some spacing */
+}
+
+.delete-icon:hover {
+    color: darkred; /* Darker color on hover */
+}
+#chat-with {
+    display: flex;
+    align-items: center; /* Vertically align the content (image + name) */
+}
+
+.profile-container {
+    display: flex;
+    align-items: center; /* Vertically align the profile picture and username */
+    justify-content: center; /* Center the items horizontally */
+}
+
+.profile-picture {
+    width: 60px; /* Set the size of the profile picture */
+    height: 60px; /* Set the size of the profile picture */
+    border-radius: 50%; /* Make the profile picture circular */
+    margin-right: 10px; /* Space between profile picture and username */
+}
+
+.user-name {
+    font-size: 20px; /* Set the font size for the username */
+    font-weight: bold; /* Make the username bold */
+    display: inline-block; /* Make the span behave like an inline block */
+    text-align: center; /* Center the text horizontally */
+}
+/* General Navbar Styling */
+.navbar {
+    background: rgb(25, 24, 24);
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    margin-left: 0px;
+    width: 100%;
+    height: 80px;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navbar-container {
+
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    height: 80px;
+    margin: 0 auto;
+}
+
+.navbar-brand {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    left: 5px;
+    margin-left: 4px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 4rem;
+    font-weight: bold;
+    color: #ecf0f1;
+}
+
+.logout-link {
+    position: absolute;
+    margin-left: auto;
+    margin-right: 30px;
+    top: 20px;
+    color: #ecf0f1;
+    right: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    background-color: #4d4ded;
+    transition: background-color 0.3s ease;
+}
+
+.logout-link:hover {
+    background-color: #e74c3c;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .logout-link {
+        font-size: 1rem;
+        margin-top: 10px;
+    }
 }

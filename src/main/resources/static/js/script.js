@@ -31,7 +31,6 @@ async function connect() {
     });
 }
 
-// Fetch user list from backend
 async function fetchUsers() {
     const response = await fetch("/users/data");
     const users = await response.json();
@@ -40,23 +39,66 @@ async function fetchUsers() {
     userList.innerHTML = ""; // Clear previous list
 
     users.forEach(user => {
-        unreadMessages[user] = 0; // Initialize unread counter
-        const userElement = document.createElement("li");
-        userElement.setAttribute("id", `user-${user}`); // Unique ID for the user element
-        userElement.textContent = user;
-        userElement.onclick = () => selectUser(user);
+        unreadMessages[user.contactName] = 0;  // Initialize unread message count for each user
 
-        // Add badge for unread messages
+        // Create the list item element
+        const userElement = document.createElement("li");
+        userElement.setAttribute("id", `user-${user.contactName}`); // Unique ID for the user element
+        userElement.classList.add("user-item");
+
+        // Create profile picture element
+        const profileImg = document.createElement("img");
+        profileImg.setAttribute("src", user.profilePictureLink);
+        profileImg.setAttribute("alt", `${user.contactName}'s profile picture`);
+        profileImg.classList.add("profile-picture");
+
+        // Create badge element
         const badge = document.createElement("span");
         badge.classList.add("badge");
-        badge.style.display = "none"; // Hide badge initially
-        badge.textContent = unreadMessages[user];
-        userElement.appendChild(badge);
+        badge.style.display = "none"; // Initially hide the badge
+        badge.textContent = unreadMessages[user.contactName];  // Set unread message count
+        userElement.appendChild(badge); // Add badge to user element, not profile container
 
+        // Add contact name element
+        const userName = document.createElement("span");
+        userName.textContent = user.contactName;
+        userName.classList.add("user-name");
+
+        // Create delete button
+        const deleteButton = document.createElement("i");
+        deleteButton.classList.add("fa-solid", "fa-trash");
+        deleteButton.classList.add("delete-icon");
+        deleteButton.onclick = async () => {
+            const deleteResponse = await fetch(`/users/deleteContact/${user.contactName}`, {
+                method: "DELETE"
+            });
+            if (deleteResponse.ok) {
+                userElement.remove(); // Remove user from the list
+                document.getElementById("messages").innerHTML=""
+                document.getElementById("chat-with").textContent = "Select a contact to start chatting";
+            } else {
+                alert("Failed to delete contact.");
+            }
+        };
+
+        // Handle user selection
+        userElement.addEventListener("click", () => {
+            selectUser(user.contactName);
+            selectedUser = user.contactName;
+        });
+
+        // Append profile picture, username, and delete button to the user element
+        userElement.appendChild(profileImg);
+        userElement.appendChild(userName);
+        userElement.appendChild(deleteButton);
+
+        // Append the user element to the user list
         userList.appendChild(userElement);
     });
 }
 
+
+// Handle incoming messages
 // Handle incoming messages
 function handleIncomingMessage(message) {
     const sender = message.sender;
@@ -64,7 +106,7 @@ function handleIncomingMessage(message) {
     if (selectedUser !== sender) {
         // Increment unread count for the sender
         unreadMessages[sender] = (unreadMessages[sender] || 0) + 1;
-        updateBadge(sender);
+        updateBadge(sender);  // Ensure badge gets updated even when not selected
     } else {
         // Directly display the message if the user is already chatting with the sender
         displayMessage(message, false);
@@ -74,7 +116,10 @@ function handleIncomingMessage(message) {
 // Update badge with the unread message count
 function updateBadge(username) {
     const userElement = document.getElementById(`user-${username}`);
+    if (!userElement) return; // Return if the user element doesn't exist
     const badge = userElement.querySelector(".badge");
+
+    // Update the badge content and display
     badge.innerHTML = `${unreadMessages[username]} <i class="fa-regular fa-message"></i>`;
     badge.style.display = unreadMessages[username] > 0 ? "inline-block" : "none";
 }
@@ -82,15 +127,50 @@ function updateBadge(username) {
 // Select a contact
 function selectUser(username) {
     selectedUser = username;
-    document.getElementById("chat-with").textContent = `Chatting with: ` + username;
 
-    // Reset unread count for the selected user
+    // Find the selected user's profile picture and username
+    const selectedUserElement = document.getElementById(`user-${username}`);
+    const profileImgSrc = selectedUserElement.querySelector("img").src; // Get the profile picture link
+
+    // Get the chat-with element where we want to display the profile picture and name
+    const chatWithElement = document.getElementById("chat-with");
+
+    // Clear previous content in chat-with and add new content
+    chatWithElement.innerHTML = ""; // Clear previous content
+
+    // Create a new container for the profile picture and username
+    const profileContainer = document.createElement("div");
+    profileContainer.classList.add("profile-container");
+
+    // Create image element for profile picture
+    const profileImg = document.createElement("img");
+    profileImg.setAttribute("src", profileImgSrc); // Set the profile picture URL
+    profileImg.setAttribute("alt", `${username}'s profile picture`); // Set the alt attribute
+    profileImg.classList.add("profile-picture"); // Optional: Add a class for styling
+
+    // Create span for the username
+    const userNameElement = document.createElement("span");
+    userNameElement.textContent = username; // Set the username
+    userNameElement.classList.add("user-name"); // Optional: Add a class for styling
+    userNameElement.style.fontSize="24px";
+
+    // Append profile picture and username to the container
+    profileContainer.appendChild(profileImg);
+    profileContainer.appendChild(userNameElement);
+
+    // Append the container to the chat-with element
+    chatWithElement.appendChild(profileContainer);
+
+    // Clear previous messages and fetch chat history
+    document.getElementById("messages").innerHTML = "";
+
+    // Reset unread message count for the selected user
     unreadMessages[username] = 0;
-    updateBadge(username);
+    updateBadge(username); // Hide the badge for this user
 
-    document.getElementById("messages").innerHTML = ""; // Clear previous messages
     fetchChatHistory(username);
 }
+
 
 // Fetch chat history with the selected user
 async function fetchChatHistory(username) {
@@ -254,7 +334,6 @@ document.getElementById("add-contact").addEventListener("click", async () => {
         });
 
         if (response.ok) {
-            alert(`${newContact} added successfully!`);
             fetchUsers(); // Refresh the user list
             newContactInput.value = ""; // Clear input
         } else {

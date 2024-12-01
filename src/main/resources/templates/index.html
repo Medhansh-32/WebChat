@@ -5,15 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Application</title>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/style.css">
 
 
 </head>
 <body>
+<nav class="navbar">
+    <div class="navbar-container">
+        <span class="navbar-brand">WebChat</span>
+        <a href="/logout" class="logout-link">Log Out <i class="fa-solid fa-right-from-bracket"></i></a>
+    </div>
+</nav>
 <button id="activate">Activate</button>
-<div id="container">
+<div id="container" style="margin-top: 90px;border-radius: 0px">
     <!-- User List -->
     <div id="user-list">
         <h3>Contacts</h3>

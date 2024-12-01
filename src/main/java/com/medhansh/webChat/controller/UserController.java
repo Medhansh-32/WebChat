@@ -1,6 +1,7 @@
 package com.medhansh.webChat.controller;
 
 
+import com.medhansh.webChat.model.Contact;
 import com.medhansh.webChat.model.User;
 import com.medhansh.webChat.repository.UserRepository;
 import com.medhansh.webChat.service.ImageUploadService;
@@ -33,15 +34,18 @@ public class UserController {
     }
 
     @GetMapping("/data")
-    public List<String> getAllUsers() {
+    public List<Contact> getAllUsers() {
         return userService.getAllUsers();
     }
 
-        @PostMapping("/register")
-        public ResponseEntity createUser(@ModelAttribute User user,
-                @RequestParam(value = "profilePicture", required = false) MultipartFile file) {
+    @PostMapping("/register")
+    public ResponseEntity createUser(@RequestParam String username,
+                                     @RequestParam String password,
+                                     @RequestParam(value = "profilePicture", required = false) MultipartFile file) {
 
-            Boolean flag=userService.createUser(user,file);
+
+        Boolean flag=userService.createUser(User.builder().username(username)
+                .password(password).build(),file);
         if(flag==true){
             return new ResponseEntity(HttpStatus.OK);
         }else{
@@ -50,10 +54,20 @@ public class UserController {
 
     }
     @PostMapping("/addContact")
-    public ResponseEntity addContact(@RequestBody Map<String, String> requestBody) {
-        log.info(requestBody.get("newContact"));
-        if(userService.addContact(requestBody.get("newContact"))){
+    public ResponseEntity addContact(@RequestBody Map<String, String> requestData) {
+        String newContact = requestData.get("newContact");
+        if(userService.addContact(newContact)){
             return new ResponseEntity(HttpStatus.OK);
+        }else{
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+    @DeleteMapping("/deleteContact/{contactName}")
+    public ResponseEntity deleteContact(@PathVariable String contactName) {
+        log.info(contactName);
+        if(userService.deleteContact(contactName)){
+            return new ResponseEntity<>(HttpStatus.OK);
         }else{
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }

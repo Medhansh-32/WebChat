@@ -1,17 +1,19 @@
 package com.medhansh.webChat.model;
 
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +23,7 @@ public class User {
     private String username;
 
     private String password;
-    // Getters and Setters
+
     private String profilePicture;
 
     @ElementCollection
@@ -29,8 +31,5 @@ public class User {
             name = "user_contacts",
             joinColumns = @JoinColumn(name = "user_id")
     )
-    @Column(name = "contact_name")
-    private List<String> contacts = new ArrayList<>();
-
-
+    private List<Contact> contacts = new ArrayList<>();
 }
