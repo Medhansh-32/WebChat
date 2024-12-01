@@ -22,6 +22,7 @@ public class User {
 
     private String password;
     // Getters and Setters
+    private String profilePicture;
 
     @ElementCollection
     @CollectionTable(

@@ -1,0 +1,257 @@
+/* General Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+    overflow: hidden;
+}
+
+/* Container Layout */
+#container {
+    display: flex;
+    flex: 1;
+    height: 100%;
+}
+
+/* Sidebar - User List */
+#user-list {
+    width: 25%;
+    background: rgba(0, 0, 0, 0.7);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#user-list h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 10px 2px 5px 6px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+
+}
+
+#users {
+    list-style: none;
+    margin: 0;
+    padding: 0 10px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+li {
+    padding: 10px;
+    margin: 10px 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    color: #ecf0f1;
+}
+
+li:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+#add-contact-section {
+    display: flex;
+    padding: 10px;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+#new-contact-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ecf0f1;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ecf0f1;
+    outline: none;
+}
+
+/* Chat Window */
+#chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 0 15px 15px 0;
+}
+
+#chat-with {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 0px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Messages Section */
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+/* Individual Messages */
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+    word-wrap: break-word;
+    animation: fadeIn 0.3s;
+}
+
+.sent {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: #fff;
+    text-align: right;
+    margin-left: auto;
+    width: fit-content;
+}
+
+.received {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+    margin-right: auto;
+    width: fit-content;
+}
+
+/* Message Input Section */
+#message-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ecf0f1;
+    outline: none;
+    font-size: 1rem;
+}
+
+button {
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    font-size: 1rem;
+    transition: transform 0.3s, background 0.3s;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #1d6fa5, #145374);
+    transform: scale(1.1);
+}
+
+/* File Upload Icon */
+#fileInputIcon {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ecf0f1;
+    transition: transform 0.3s, color 0.3s;
+}
+
+#fileInputIcon:hover {
+    transform: rotate(45deg);
+    color: #1abc9c;
+}
+
+/* Display Selected File Name */
+#fileName {
+    font-size: 0.9rem;
+    color: #bdc3c7;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar Styling */
+#messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+}
+
+#messages::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.5);
+}
+.rotating-circle {
+    width: 50px;
+    height: 50px;
+    border: 5px solid transparent;
+    border-top: 5px solid #3498db; /* Adjust color as needed */
+    border-radius: 50%;
+    margin-left: auto;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* Style the container for each user (image and name) */
+.user-container {
+    display: flex;
+    align-items: center; /* Align image and text vertically */
+}
+
+/* Style the profile image */
+.profile-image {
+    width: 40px; /* Set width of the image */
+    height: 40px; /* Set height of the image */
+    border-radius: 50%; /* Make the image circular */
+    margin-right: 10px; /* Space between image and username */
+    object-fit: cover; /* Ensure the image covers the circle area */
+}
+
+/* Style the badge for unread messages */
+.badge {
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    padding: 5px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}

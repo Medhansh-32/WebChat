@@ -16,8 +16,9 @@ public class ChatMessage {
     private String sender;
     private String receiver;
     private String content;
-
     private LocalDateTime timestamp;
+    private String imageLink;
+
 
     // Getters and Setters
 }

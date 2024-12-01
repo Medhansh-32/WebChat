@@ -6,130 +6,10 @@
     <title>Chat Application</title>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/style.css">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
 
-        #user-list {
-            width: 25%;
-            border-right: 1px solid #ccc;
-            overflow-y: auto;
-        }
-
-        #chat-window {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            width: 75%;
-        }
-
-        #container {
-            display: flex;
-            flex: 1;
-            height: 100%;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-
-        li:hover {
-            background: #f1f1f1;
-        }
-
-        #messages {
-            flex: 1;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            padding: 10px;
-        }
-
-        #message-form {
-            display: flex;
-        }
-
-        #message-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px;
-            margin-left: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .message {
-            margin: 5px 0;
-            padding: 5px 10px;
-            border-radius: 10px;
-            max-width: 60%;
-            word-wrap: break-word;
-        }
-
-        .sent {
-            background-color: #d4edda;
-            text-align: right;
-            margin-left: auto;
-        }
-
-        .received {
-            background-color: #f8d7da;
-            text-align: left;
-            margin-right: auto;
-        }
-
-        #add-contact-section {
-            margin: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #new-contact-input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .badge {
-            background-color: red;
-            color: white;
-            padding: 3px 6px;
-            border-radius: 50%;
-            font-size: 12px;
-            display: none;
-            margin-left: 10px;
-        }
-    </style>
 </head>
 <body>
 <button id="activate">Activate</button>
@@ -143,7 +23,7 @@
         <!-- Add Contact Section -->
         <div id="add-contact-section">
             <input type="text" id="new-contact-input" placeholder="Enter new contact name" />
-            <button id="add-contact" style="background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            <button id="add-contact">
                 Add
             </button>
         </div>
@@ -157,181 +37,21 @@
         </div>
         <form id="message-form" onsubmit="sendMessage(); return false;">
             <input type="text" id="message-input" placeholder="Type a message..." />
-            <button type="submit">Send</button>
+            <!-- Font Awesome Icon as file input trigger -->
+            <i id="fileInputIcon" class="fas fa-upload"></i>  <!-- Replace with your desired Font Awesome icon -->
+
+            <!-- Hidden file input -->
+            <input type="file" id="image-input" style="display: none;" />
+
+            <!-- Display selected file -->
+            <div id="fileName"></div>
+
+            <button type="submit" style="border-radius: 50%"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
+
     </div>
 </div>
-<p id="online_user" th:text="${username}"></p>
-
-<script>
-    const user = document.getElementById("online_user").innerText;
-    const btn = document.getElementById("activate");
-    btn.addEventListener("click", () => {
-        console.log("Clicking...");
-        connect();
-    });
-
-    let stompClient = null;
-    let selectedUser = null;
-    const unreadMessages = {}; // Track unread message counts for each user
-
-    // Connect to WebSocket
-    async function connect() {
-        await fetchUsers();
-        const socket = new SockJS('/chat');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, () => {
-            console.log('Connected to WebSocket');
-            stompClient.subscribe('/user/queue/messages', (message) => {
-                const messageData = JSON.parse(message.body);
-                handleIncomingMessage(messageData);
-            });
-        });
-    }
-
-    // Fetch user list from backend
-    async function fetchUsers() {
-        const response = await fetch("/users/data");
-        const users = await response.json();
-
-        const userList = document.getElementById("users");
-        userList.innerHTML = ""; // Clear previous list
-
-        users.forEach(user => {
-            unreadMessages[user] = 0; // Initialize unread counter
-            const userElement = document.createElement("li");
-            userElement.setAttribute("id", `user-${user}`); // Unique ID for the user element
-            userElement.textContent = user;
-            userElement.onclick = () => selectUser(user);
-
-            // Add badge for unread messages
-            const badge = document.createElement("span");
-            badge.classList.add("badge");
-            badge.style.display = "none"; // Hide badge initially
-            badge.textContent = unreadMessages[user];
-            userElement.appendChild(badge);
-
-            userList.appendChild(userElement);
-        });
-    }
-
-    // Handle incoming messages
-    function handleIncomingMessage(message) {
-        const sender = message.sender;
-
-        if (selectedUser !== sender) {
-            // Increment unread count for the sender
-            unreadMessages[sender] = (unreadMessages[sender] || 0) + 1;
-            updateBadge(sender);
-        } else {
-            // Directly display the message if the user is already chatting with the sender
-            displayMessage(message, false);
-        }
-    }
-
-    // Update badge with the unread message count
-    function updateBadge(username) {
-        const userElement = document.getElementById(`user-${username}`);
-        const badge = userElement.querySelector(".badge");
-        badge.textContent = unreadMessages[username];
-        badge.style.display = unreadMessages[username] > 0 ? "inline-block" : "none";
-    }
-
-    // Select a contact
-    function selectUser(username) {
-        selectedUser = username;
-        document.getElementById("chat-with").textContent = `Chatting with: ` + username;
-
-        // Reset unread count for the selected user
-        unreadMessages[username] = 0;
-        updateBadge(username);
-
-        document.getElementById("messages").innerHTML = ""; // Clear previous messages
-        fetchChatHistory(username);
-    }
-
-    // Fetch chat history with the selected user
-    async function fetchChatHistory(username) {
-        const response = await fetch(`/messages/${username}`);
-        const messages = await response.json();
-
-        const messagesDiv = document.getElementById("messages");
-        messagesDiv.innerHTML = ""; // Clear previous messages
-
-        messages.forEach(message => {
-            const isSent = message.sender === user;
-            displayMessage(message, isSent);
-        });
-    }
-
-    // Display received or sent message
-    function displayMessage(message, isSent) {
-        // Ensure messages are only displayed if the user is chatting with the correct person
-        if ((isSent && message.receiver !== selectedUser) || (!isSent && message.sender !== selectedUser)) {
-            return; // Do not display the message if the selected user is not involved
-        }
-
-        const messagesDiv = document.getElementById("messages");
-        const messageElement = document.createElement("div");
-        messageElement.classList.add("message");
-        messageElement.classList.add(isSent ? "sent" : "received");
-        messageElement.textContent = `${message.sender}: ${message.content}`;
-        messagesDiv.appendChild(messageElement);
-
-        // Scroll to the latest message
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    // Send a message
-    function sendMessage() {
-        const messageInput = document.getElementById("message-input").value;
-
-        if (!selectedUser) {
-            alert("Please select a user to chat with!");
-            return;
-        }
-
-        stompClient.send("/app/private-message", {}, JSON.stringify({
-            sender: user,
-            receiver: selectedUser,
-            content: messageInput
-        }));
-
-        // Display the sent message immediately
-        displayMessage({ sender: user, receiver: selectedUser, content: messageInput }, true);
-
-        document.getElementById("message-input").value = ""; // Clear input field
-    }
-
-    // Add contact functionality
-    document.getElementById("add-contact").addEventListener("click", async () => {
-        const newContactInput = document.getElementById("new-contact-input");
-        const newContact = newContactInput.value.trim();
-
-        if (newContact === "") {
-            alert("Please enter a valid username.");
-            return;
-        }
-
-        try {
-            const response = await fetch('/users/addContact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ newContact: newContact })
-            });
-
-            if (response.ok) {
-                alert(`${newContact} added successfully!`);
-                fetchUsers(); // Refresh the user list
-                newContactInput.value = ""; // Clear input
-            } else {
-                alert("Failed to add contact. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error adding contact:", error);
-            alert("An error occurred while adding the contact.");
-        }
-    });
-</script>
+<p id="online_user" th:text="${username}" style="display: none"></p>
+<script src="/js/script.js"></script>
 </body>
 </html>

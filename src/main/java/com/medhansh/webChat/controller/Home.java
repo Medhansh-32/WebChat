@@ -14,5 +14,9 @@ public class Home {
         model.addAttribute("username",SecurityContextHolder.getContext().getAuthentication().getName());
         return "index";
     }
+    @GetMapping("/register")
+    public String register(){
+        return "registration";
+    }
 
 }
