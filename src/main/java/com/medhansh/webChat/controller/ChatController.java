@@ -19,6 +19,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
@@ -46,9 +48,11 @@ public class ChatController {
 
     @MessageMapping("/private-message")
     public ChatMessage sendPrivateMessage(@Payload ChatMessage message) {
-        // Get the sender's username from session attributes
 
-            message.setTimestamp(LocalDateTime.now());
+        String timeZone = "Asia/Kolkata";
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timeZone));
+        LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
+            message.setTimestamp(localDateTime);
             messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", message);
             System.out.println(message);
             return chatMessageRepository.save(message);
