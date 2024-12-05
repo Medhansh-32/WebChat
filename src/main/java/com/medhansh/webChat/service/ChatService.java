@@ -37,6 +37,12 @@ public class ChatService {
 
 
     public ByteArrayResource downloadImage(String url) {
-        return restTemplate.getForObject(url, ByteArrayResource.class);
+        try {
+            return restTemplate.getForObject(url, ByteArrayResource.class); // Might throw an exception
+        } catch (Exception e) {
+            log.error("Failed to download image from URL: {}", url, e);
+            throw new RuntimeException("Failed to download image from URL: " + url, e); // Throw exception to controller
+        }
     }
+
 }
