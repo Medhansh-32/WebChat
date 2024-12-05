@@ -5,9 +5,12 @@ import com.medhansh.webChat.model.User;
 import com.medhansh.webChat.repository.ChatMessageRepository;
 import com.medhansh.webChat.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -16,10 +19,13 @@ import java.util.List;
 public class ChatService {
 
     private final UserRepository userRepository;
+    private final RestTemplateBuilder restTemplateBuilder;
     private ChatMessageRepository chatMessageRepository;
-    public ChatService(ChatMessageRepository chatMessageRepository, UserRepository userRepository) {
+    private RestTemplate restTemplate=new RestTemplate();
+    public ChatService(ChatMessageRepository chatMessageRepository, UserRepository userRepository, RestTemplateBuilder restTemplateBuilder) {
         this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
+        this.restTemplateBuilder = restTemplateBuilder;
     }
     
     public List<ChatMessage> getMessages(@PathVariable String user2) {
@@ -30,4 +36,7 @@ public class ChatService {
     }
 
 
+    public ByteArrayResource downloadImage(String url) {
+        return restTemplate.getForObject(url, ByteArrayResource.class);
+    }
 }

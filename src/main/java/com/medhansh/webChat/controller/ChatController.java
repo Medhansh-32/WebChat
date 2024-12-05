@@ -6,6 +6,8 @@ import com.medhansh.webChat.service.ChatService;
 import com.medhansh.webChat.service.ImageUploadService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
+import java.net.URL;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -38,12 +42,12 @@ public class ChatController {
         this.messagingTemplate = messagingTemplate;
         this.chatMessageRepository = chatMessageRepository;
         this.chatService = chatService;
-        this.imageUploadService=imageUploadService;
+        this.imageUploadService = imageUploadService;
     }
 
     @PostMapping("/image/upload")
     public String uploadImage(@RequestParam("file") MultipartFile file) {
-       return imageUploadService.uploadImage(file);
+        return imageUploadService.uploadImage(file);
     }
 
     @MessageMapping("/private-message")
@@ -52,10 +56,10 @@ public class ChatController {
         String timeZone = "Asia/Kolkata";
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timeZone));
         LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
-            message.setTimestamp(localDateTime);
-            messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", message);
-            System.out.println(message);
-            return chatMessageRepository.save(message);
+        message.setTimestamp(localDateTime);
+        messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", message);
+        System.out.println(message);
+        return chatMessageRepository.save(message);
     }
 
     @GetMapping("/messages/{user2}")
@@ -63,5 +67,24 @@ public class ChatController {
         return chatService.getMessages(user2);
     }
 
+    @GetMapping("/image/download")
+    public ResponseEntity<ByteArrayResource> downloadImage(@RequestParam("imageUrl") String url) throws IOException {
+        try{
+        URL imageUrl = new URL(url);
+        byte[] imageBytes = imageUrl.openStream().readAllBytes();
 
+        // Create a ByteArrayResource
+        ByteArrayResource resource = new ByteArrayResource(imageBytes);
+
+        String fileName = url.substring(url.lastIndexOf('/') + 1);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .body(resource);
+    } catch(Exception e)
+
+    {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
 }

@@ -363,4 +363,47 @@ fileInput.addEventListener("change", (event) => {
     }
 });
 // Add rotating loader for image upload
+document.addEventListener('DOMContentLoaded', () => {
+    // Attach click event listener to images in the chat messages
+    document.getElementById('messages').addEventListener('click', (event) => {
+        if (event.target.tagName === 'IMG' && event.target.alt === 'Image message') {
+            const imageUrl = event.target.src; // Extract the image URL
+            downloadImage(imageUrl);
+        }
+    });
+});
+
+function downloadImage(imageUrl) {
+    // Call the Spring Boot API to download the image
+    fetch(`/image/download?imageUrl=${encodeURIComponent(imageUrl)}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.blob(); // Get the image as a Blob
+        })
+        .then((blob) => {
+            // Create a temporary link element to trigger the download
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = extractFileName(imageUrl); // Set the filename
+            document.body.appendChild(link);
+            link.click(); // Trigger the download
+            document.body.removeChild(link); //
+            alert("Image Downloaded....")
+            // Remove the link after download
+        })
+        .catch((error) => {
+            console.error('Error downloading the image:', error);
+        });
+}
+
+function extractFileName(url) {
+    return url.substring(url.lastIndexOf('/') + 1);
+}
 
