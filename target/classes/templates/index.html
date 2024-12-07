@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/style.css">
+
+
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-container">
+        <span class="navbar-brand" id="navbar-logo">WebChat <i class="fa-regular fa-comments"></i></span>
+        <button id="toggle-contacts">Click</button>
+        <a href="/logout" class="logout-link">Log Out <i class="fa-solid fa-right-from-bracket"></i></a>
+    </div>
+</nav>
+<button id="activate">Activate</button>
+<div id="container">
+    <!-- User List -->
+    <div id="user-list">
+        <h3>Contacts <i class="fa-regular fa-address-book"></i></h3>
+        <ul id="users">
+            <!-- User list will be populated dynamically -->
+        </ul>
+        <!-- Add Contact Section -->
+        <div id="add-contact-section">
+            <input type="text" id="new-contact-input" placeholder="Enter new contact name" />
+            <button id="add-contact" style="border-radius: 50%;">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </div>
+    <div id="chat-window">
+        <h3 id="chat-with">Select a contact to start chatting</h3>
+        <div id="messages">
+            <!-- Chat messages will appear here -->
+        </div>
+        <form id="message-form" onsubmit="sendMessage(); return false;">
+            <input type="text" id="message-input" placeholder="Type a message..." />
+            <!-- Font Awesome Icon as file input trigger -->
+            <i id="fileInputIcon" class="fas fa-upload"></i>  <!-- Replace with your desired Font Awesome icon -->
+
+            <!-- Hidden file input -->
+            <input type="file" id="image-input" style="display: none;" />
+
+            <!-- Display selected file -->
+            <div id="fileName"></div>
+
+            <button type="submit" style="border-radius: 50%"><i class="fa-solid submit fa-paper-plane"></i></button>
+        </form>
+
+    </div>
+</div>
+<p id="online_user" th:text="${username}" style="display: none"></p>
+<script src="/js/script.js"></script>
+</body>
+</html>
