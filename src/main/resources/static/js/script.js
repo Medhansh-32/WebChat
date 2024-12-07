@@ -5,11 +5,11 @@ const btn = document.getElementById("activate");
 btn.addEventListener("click", () => {
     console.log("Clicking...");
     connect();
+
 });
 
 // Trigger the click programmatically
 btn.click();
-
 // Hide the button after triggering the click
 btn.style.display = "none";
 
@@ -18,6 +18,32 @@ let selectedUser = null;
 const unreadMessages = {}; // Track unread message counts for each user
 
 // Connect to WebSocket
+function changeStyle(){
+    const htmlWidth = document.documentElement.clientWidth;
+    const navbarLogo=document.getElementById("navbar-logo");
+
+    if (htmlWidth < 462) {
+        if (chatWindow.style.display === 'none' || userList.style.display === '') {
+
+            userList.style.display = 'none';
+            chatWindow.style.display = 'block';
+            chatWindow.style.width="100%";
+            toggleButton.style.display="block";
+            navbarLogo.style.fontSize="1.5rem";
+            toggleButton.textContent = 'Show Contacts';
+            chatWindow.style.overflowY="auto";
+        } else {
+            userList.style.display = 'block';
+            userList.style.width="100%";
+            navbarLogo.style.fontSize="2rem";
+            chatWindow.style.display = 'none';
+            toggleButton.style.display="none";
+            userList.style.overflowY="auto";
+        }  // Call the changeStyle function if the condition is met
+    }
+
+}
+
 async function connect() {
     await fetchUsers();
     const socket = new SockJS('/chat');
@@ -29,6 +55,7 @@ async function connect() {
             handleIncomingMessage(messageData);
         });
     });
+  //  changeStyle();
 }
 
 async function fetchUsers() {
@@ -85,6 +112,8 @@ async function fetchUsers() {
         userElement.addEventListener("click", () => {
             selectUser(user.contactName);
             selectedUser = user.contactName;
+            const htmlWidth = document.documentElement.clientWidth;
+      changeStyle();
         });
 
         // Append profile picture, username, and delete button to the user element
@@ -94,6 +123,8 @@ async function fetchUsers() {
 
         // Append the user element to the user list
         userList.appendChild(userElement);
+
+
     });
 }
 
@@ -223,8 +254,25 @@ function displayMessage(message, isSent) {
 
     // Create and append the timestamp
     const timestamp = new Date(message.timestamp); // Assuming message.timestamp is in a valid format
-    const formattedTime = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const formattedDate = timestamp.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+
+// Format time in 12-hour clock with AM/PM
+    const formattedTime = timestamp.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+
+// Format date
+    let formattedDate = timestamp.toLocaleDateString([], {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+    });
+
+// Add a comma after the day (you can customize this part)
+    const dayIndex = formattedDate.lastIndexOf(' '); // Find the space after the day
+    formattedDate = formattedDate.slice(0, dayIndex) + ',' + formattedDate.slice(dayIndex); // Add comma
+
 
     // Check if the date is different from the last displayed date
     if (lastMessageDate !== formattedDate) {
@@ -259,6 +307,7 @@ function displayMessage(message, isSent) {
 
 // Send a message
 async function sendMessage() {
+    const messageInputActive=document.getElementById("message-input");
     const messageInput = document.getElementById("message-input").value;
     const imageInput = document.getElementById("image-input").files[0];
     if (!messageInput && !imageInput) {
@@ -313,6 +362,8 @@ async function sendMessage() {
     document.getElementById("image-input").value="";
     document.getElementById("message-input").value = ""; // Clear input field
     document.getElementById("fileName").innerText="";
+    messageInputActive.focus();
+
 }
 
 
@@ -406,4 +457,10 @@ function downloadImage(imageUrl) {
 function extractFileName(url) {
     return url.substring(url.lastIndexOf('/') + 1);
 }
+const toggleButton=document.getElementById("toggle-contacts");
+const userList=document.getElementById("user-list");
+const chatWindow=document.getElementById("chat-window");
 
+toggleButton.addEventListener('click', () => {
+   changeStyle();
+});

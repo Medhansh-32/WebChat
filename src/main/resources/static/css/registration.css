@@ -72,3 +72,23 @@ button:hover {
     font-size: 14px;
     color: #aaa; /* Subtle text for message */
 }
+.navbar {
+    background: #1c1c1c; /* Dark background color */
+    color: #ecf0f1; /* Light text color */
+    padding: 15px 20px; /* Padding inside the navbar */
+    display: flex; /* Flex layout for alignment */
+    justify-content: space-between; /* Space between brand and logout */
+    align-items: center; /* Center items vertically */
+    position: fixed; /* Fixes the navbar to the top of the viewport */
+    top: 0; /* Ensures it's at the top */
+    left: 0; /* Aligns it with the left edge */
+    width: 100%; /* Spans the entire width */
+    z-index: 1000; /* Ensures it stays above other elements */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+}
+.navbar-brand {
+    font-size: 3rem; /* Adjust font size */
+    font-weight: bold; /* Bold for emphasis */
+    color: #ecf0f1; /* Matches the navbar text color */
+    text-decoration: none; /* Removes underline */
+}
