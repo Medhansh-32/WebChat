@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,9 +28,8 @@ public class User {
 
     @ElementCollection
     @CollectionTable(
-            name = "user_contacts",
+            name = "contact",
             joinColumns = @JoinColumn(name = "user_id")
-    )
-    @Builder.Default  // This ensures that the default value of an empty list is used when building the object
+    )@Builder.Default
     private List<Contact> contacts = new ArrayList<>();
 }

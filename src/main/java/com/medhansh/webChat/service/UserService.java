@@ -36,6 +36,7 @@ public class UserService {
     public List<Contact> getAllUsers() {
         String username=SecurityContextHolder.getContext().getAuthentication().getName();
         User user=userRepository.findByUsername(username);
+        System.out.println(user.getContacts());
         return user.getContacts();
 
     }
@@ -68,7 +69,7 @@ public class UserService {
                             .contactName(newContactName)
                                     .profilePictureLink(newUser.getProfilePicture()).build();
                 user.getContacts().add(contact);
-                userRepository.save(user);
+                System.out.println(userRepository.save(user));
                 return true;
             }
         catch (Exception e) {
