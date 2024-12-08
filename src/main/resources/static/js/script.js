@@ -328,7 +328,8 @@ async function sendMessage() {
 
         try {
             const rotate =document.createElement("div");
-            rotate.classList.add("rotating-circle");
+            rotate.classList.add("loader");
+            rotate.style.marginLeft="auto";
             document.getElementById("messages").appendChild(rotate);
             const response = await fetch("/image/upload", {
                 method: "POST",
