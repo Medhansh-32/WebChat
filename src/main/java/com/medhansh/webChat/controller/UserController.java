@@ -2,10 +2,12 @@ package com.medhansh.webChat.controller;
 
 
 import com.medhansh.webChat.model.Contact;
+import com.medhansh.webChat.model.Otp;
 import com.medhansh.webChat.model.User;
 import com.medhansh.webChat.repository.UserRepository;
 import com.medhansh.webChat.service.ImageUploadService;
 import com.medhansh.webChat.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +46,12 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity createUser(@RequestParam String username,
                                      @RequestParam String password,
+                                     @RequestParam String email,
                                      @RequestParam(value = "profilePicture", required = false) MultipartFile file, HttpServletResponse response) throws IOException {
 
 
         Boolean flag=userService.createUser(User.builder().username(username)
-                .password(password).build(),file);
+                .password(password).email(email).build(),file);
         if(flag==true){
             return new ResponseEntity(HttpStatus.OK);
         }else{
@@ -74,6 +77,21 @@ public class UserController {
         }else{
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-
     }
+    @GetMapping("/getOtp")
+    public ResponseEntity<Otp> getOtp(@RequestParam String email) throws MessagingException {
+        log.info(email);
+        return new ResponseEntity<>(userService.sendOtp(email),HttpStatus.OK);
+    }
+
+    @PostMapping("/verifyOtp")
+    public ResponseEntity verifyOtp(@RequestBody Map<String, String> requestData) {
+        if(userService.verifyOtp(requestData.get("email"),requestData.get("otp"))){
+            log.info("Data :"+requestData.get("otp"),requestData.get("email"));
+            return new ResponseEntity(HttpStatus.OK);
+        }else{
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

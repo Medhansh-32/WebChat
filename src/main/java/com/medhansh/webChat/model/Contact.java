@@ -15,7 +15,5 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class Contact {
     private String contactName;
     private String profilePictureLink;
-
-
 }
 

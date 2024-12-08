@@ -35,7 +35,7 @@ label {
     color: #f4f4f4; /* Light label text */
 }
 
-input[type="text"], input[type="password"], input[type="file"] {
+input[type="text"], input[type="password"], input[type="file"],input[type="email"] {
     width: 100%;
     padding: 8px;
     font-size: 14px;

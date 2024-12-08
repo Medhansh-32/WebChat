@@ -4,9 +4,12 @@ C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\we
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\controller\UserController.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\model\ChatMessage.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\model\Contact.java
+C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\model\Otp.java
+C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\model\OtpVerifiedUsers.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\model\User.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\repository\ChatMessageRepository.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\repository\UserRepository.java
+C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\repository\VerifiedUserRepository.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\security\AuthenticationHandshakeInterceptor.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\security\SecurityConfig.java
 C:\Users\Medhansh Sharma\Downloads\webChat\webChat\src\main\java\com\medhansh\webChat\security\UserDetailServiceImpl.java
