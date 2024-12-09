@@ -15,7 +15,7 @@ body {
     display: flex;
     flex: 1;
     margin-top: 80px;
-    height: 100%;
+    height: 90%;
 }
 
 /* Sidebar - User List */
@@ -317,6 +317,9 @@ button:hover {
     }
 }
 @media screen and (max-width: 462px){
+    body{
+        zoom: 100%;
+    }
     .navbar{
         display: flex;
         align-items: center;
@@ -371,10 +374,10 @@ button:hover {
      font-size: 1.2rem;
  }
     #user-list{
-        height: 85%;
+        height: 93%;
     }
     #chat-window{
-        height: 95%;
+        height: 90%;
     }
     .logout-link{
         font-size: 0.8rem;
@@ -395,10 +398,11 @@ button:hover {
         background: rgba(0, 0, 0, 0.8);
     }
    #chat-window{
+       height: 90%;
        display: none;
    }
    #user-list{
-       width: 100%;
+       width: 93%;
    }
     button {
         background: #3498db;
@@ -417,5 +421,6 @@ button:hover {
     }
     #container{
         margin-top: 68px;
+        height: 90%;
     }
 }

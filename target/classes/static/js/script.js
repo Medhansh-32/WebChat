@@ -3,7 +3,7 @@ const btn = document.getElementById("activate");
 
 // Add the click event listener first
 btn.addEventListener("click", () => {
-    document.body.style.zoom = "90%";  // zoom out
+
     console.log("Clicking...");
     connect();
 
