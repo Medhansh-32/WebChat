@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat").setAllowedOrigins("https://webchatprod.onrender.com").withSockJS()
+        registry.addEndpoint("/chat").setAllowedOrigins("https://webchatapp-cfhr.onrender.com").withSockJS()
                 .setInterceptors(new AuthenticationHandshakeInterceptor());
 
     }
