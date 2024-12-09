@@ -358,17 +358,17 @@ button:hover {
         padding: 0px;
         left: 0px;
         height: 60px;
-        width:100vw;
+        width:100%;
         background-color: #1a1a1a;
     }
     #message-input{
         margin-left: 5px;
     }
  #fileInputIcon{
-     font-size: 1.5rem;
+     font-size: 2rem;
  }
  .submit{
-     font-size: 1rem;
+     font-size: 1.2rem;
  }
     #user-list{
         height: 85%;
