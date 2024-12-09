@@ -7,6 +7,7 @@ body {
     flex-direction: column;
     height: 100vh;
     color: #ecf0f1;
+    background-color: rgba(0, 0, 0, 0.8);
     overflow: hidden;
 }
 
