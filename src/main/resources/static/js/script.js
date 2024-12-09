@@ -412,7 +412,7 @@ fileInput.addEventListener("change", (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
         document.getElementById("fileName").textContent = `Img`;
-        document.getElementById("fileName").style.fontSize="20px"
+        document.getElementById("fileName").style.fontSize="12px"
     }
 });
 // Add rotating loader for image upload
