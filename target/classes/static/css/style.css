@@ -353,7 +353,7 @@ button:hover {
         margin-right: 15px;
     }
     #add-contact i{
-        font-size: 1.2rem;
+        font-size: 0.8rem;
     }
     #message-form{
         position: fixed;
@@ -368,10 +368,10 @@ button:hover {
         margin-left: 5px;
     }
  #fileInputIcon{
-     font-size: 1.5rem;
+     font-size: 1rem;
  }
  .submit{
-     font-size: 1.2rem;
+     font-size: 0.8rem;
  }
     #user-list{
         height: 85%;
