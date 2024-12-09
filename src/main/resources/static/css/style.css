@@ -374,10 +374,10 @@ button:hover {
      font-size: 1.2rem;
  }
     #user-list{
-        height: 93%;
+        height: 85%;
     }
     #chat-window{
-        height: 90%;
+        height: 84%;
     }
     .logout-link{
         font-size: 0.8rem;
@@ -398,11 +398,11 @@ button:hover {
         background: rgba(0, 0, 0, 0.8);
     }
    #chat-window{
-       height: 90%;
+       height: 85%;
        display: none;
    }
    #user-list{
-       width: 93%;
+       width: 100%;
    }
     button {
         background: #3498db;
