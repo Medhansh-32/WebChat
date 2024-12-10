@@ -49,8 +49,9 @@ public class ChatController {
     }
 
     @MessageMapping("/private-message")
-    public ChatMessage sendPrivateMessage(@Payload ChatMessage message) {
+    public ChatMessage sendPrivateMessage(@Payload ChatMessage message,Principal principal) {
 
+        message.setSender(principal.getName());
         String timeZone = "Asia/Kolkata";
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timeZone));
         LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();

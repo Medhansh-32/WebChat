@@ -19,7 +19,7 @@ public class AuthenticationHandshakeInterceptor implements HandshakeInterceptor 
 
         if (authentication != null) {
             // If authentication is present, add it to the session attributes
-            attributes.put("username", authentication.getName());
+           // attributes.put("username", authentication.getName());
         }
 
         // Return true to allow the handshake
