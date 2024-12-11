@@ -7,7 +7,7 @@
 ## Table of Contents
 
 
-1. [Features](features)
+1. [Features](#features)
 2. [Technologies Used](#technologies-used)
 3. [Project Architecture](#project-architecture)
 4. [Installation and Setup](#installation-and-setup)
