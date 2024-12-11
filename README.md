@@ -4,14 +4,14 @@
 
 ---
 
-##Login Page
+## Login Page
 
-<img src="/src/main/resources/static/images/login.png" width="300"/>
+<img src="/src/main/resources/static/images/login.png" width="500"/>
 
 
-##User Interface
+## User Interface
 
-<img src="/src/main/resources/static/images/userInterface.png" width="300"/>
+<img src="/src/main/resources/static/images/userInterface.png" width="1000"/>
 
 
 ## Table of Contents
