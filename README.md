@@ -18,7 +18,7 @@
 
 ---
 
-## <u>Features</u>
+## Features
 
 - **Real-Time Chat:** Send and receive messages instantly using WebSocket.
 - **Image Sharing:** Upload and share images seamlessly using Imgur's cloud services.
@@ -27,7 +27,7 @@
 
 ---
 
-## <u>Technologies Used</u>
+## Technologies Used
 
 ### Backend:
 - **Java:** Programming language used for the application.
@@ -51,7 +51,7 @@
 
 ---
 
-## <u>Project Architecture</u>
+## Project Architecture
 
 **Frontend:**
 - HTML/CSS/JavaScript
@@ -71,7 +71,7 @@
 
 ---
 
-## <u>Installation and Setup</u>
+## Installation and Setup
 
 ### Prerequisites
 
@@ -128,7 +128,7 @@
 
     The application will be available at (http://localhost:8080).
 
-### <u>Usage</u>
+### Usage
 
 - Register and log in to the WebChat application.
 - Manage your contacts by adding new ones or deleting old ones in the contact section.
@@ -136,7 +136,7 @@
 - Share images via the Imgur-integrated upload feature.
 - Download images by right-clicking on the image .
 
-### <u>Endpoints</u>
+### Endpoints
 
 #### Public Endpoints:
 
@@ -151,7 +151,7 @@
 - **POST /chat/sendMessage** - Send a message via WebSocket.
 - **POST /images/upload** - Upload and share an image.
 
-### <u>Contributing</u>
+### Contributing
 
 We welcome contributions! To contribute:
 
@@ -163,7 +163,7 @@ We welcome contributions! To contribute:
 
 ---
 
-### <u>Let's Interact!</u>
+### Let's Interact!
 
 ❤️ **Contribute:** Every little bit helps. Whether it's a small fix or a major feature, we welcome all contributions. Don't hesitate to open an issue or submit a pull request.
 
