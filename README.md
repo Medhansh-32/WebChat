@@ -95,7 +95,7 @@
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/your-username/webchat.git
+   https://github.com/Medhansh-32/WebChat.git
    cd webchat
 
 ### Set up your database:
